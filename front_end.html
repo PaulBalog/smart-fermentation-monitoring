@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Licență Control Panel - PRO Desktop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* =========================================
+           STILURI DE BAZĂ (DARK THEME - DESKTOP)
+           ========================================= */
+        :root {
+            --bg-body: #121212;       
+            --bg-container: #1e1e1e;  
+            --bg-sidebar: #171717;   
+            --border-color: #333333;  
+            --text-main: #e0e0e0;     
+            --text-light: #aaaaaa;    
+            --accent-blue: #00A9E0;
+            --gradient-header: linear-gradient(to right, #2c3e50, #00A9E0); 
+            --gradient-on: linear-gradient(to right, #56ab2f, #a8e063);
+            --gradient-off: linear-gradient(to right, #cb2d3e, #ef473a);
+            --gradient-pos: linear-gradient(to bottom, #4ca1af, #c4e0e5);
+            --success-green: #2ecc71;
+            --warning-yellow: #f1c40f;
+            --danger-red: #e74c3c;
+            --sidebar-width: 280px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            display: flex; 
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        /* =========================================
+           SIDEBAR FIX
+           ========================================= */
+        #sidebar { 
+            width: var(--sidebar-width); 
+            height: 100vh; 
+            background-color: var(--bg-sidebar); 
+            border-right: 1px solid var(--border-color); 
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+
+        .sidebar-header { 
+            padding: 30px 20px; 
+            border-bottom: 1px solid var(--border-color); 
+            text-align: center;
+        }
+        
+        .app-title { 
+            font-size: 18px; 
+            font-weight: bold; 
+            color: #fff; 
+            letter-spacing: 1px; 
+            line-height: 1.4;
+        }
+
+        .sidebar-menu { flex: 1; padding-top: 20px; }
+
+        .sidebar-menu a { 
+            padding: 18px 25px; 
+            text-decoration: none; 
+            font-size: 15px; 
+            color: var(--text-main); 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            transition: 0.2s; 
+            border-left: 4px solid transparent; 
+        }
+        
+        .sidebar-menu a:hover { background-color: rgba(255,255,255,0.05); color: #fff; }
+        .sidebar-menu a.active-link { background-color: rgba(0, 169, 224, 0.1); color: var(--accent-blue); font-weight: bold; border-left: 4px solid var(--accent-blue); }
+        .sidebar-menu a i { width: 20px; text-align: center; font-size: 18px; }
+
+        .sidebar-footer { padding: 20px; border-top: 1px solid var(--border-color); text-align: center; font-size: 12px; color: var(--text-light); }
+
+        /* =========================================
+           ZONĂ CONȚINUT PRINCIPAL
+           ========================================= */
+        #main-wrapper { 
+            flex: 1; 
+            height: 100vh;
+            overflow-y: auto; 
+            background-color: var(--bg-body);
+        }
+
+        #top-bar {
+            height: 60px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 30px;
+            background: var(--bg-container);
+            font-family: monospace;
+            color: var(--text-light);
+        }
+
+        #content-area { max-width: 1200px; margin: 0 auto; padding: 40px; }
+
+        .page-section { display: none; animation: fadeIn 0.4s ease; }
+        #page-about { display: block; } 
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* =========================================
+           CONTAINERE & DESIGN
+           ========================================= */
+        .container { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 30px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .panel-header { background: var(--gradient-header); color: white; padding: 12px 20px; font-size: 15px; font-weight: bold; display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
+        .panel-content { padding: 25px; }
+
+        h2 { font-size: 1.2em; margin-bottom: 15px; color: #fff; font-weight: 600; }
+        p { font-size: 15px; color: var(--text-light); line-height: 1.6; margin-bottom: 15px; }
+
+        /* --- PAGINA DESPRE PROIECT --- */
+        .hero-section { text-align: center; padding: 20px 0 40px 0; border-bottom: 1px solid var(--border-color); margin-bottom: 30px; }
+        .hero-title { font-size: 28px; color: var(--accent-blue); font-weight: bold; margin-bottom: 15px; line-height: 1.3; }
+        .hero-desc { font-size: 16px; color: var(--text-main); max-width: 800px; margin: 0 auto; line-height: 1.6; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+        .feature-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 20px; border-radius: 6px; display: flex; align-items: center; gap: 15px; transition: 0.2s; }
+        .feature-card:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-blue); transform: translateY(-3px); }
+        .feature-card i { font-size: 26px; color: var(--accent-blue); width: 35px; text-align: center; }
+        .feature-card span { font-size: 15px; font-weight: 600; color: #fff; line-height: 1.3; }
+        .feature-card small { display: block; color: var(--text-light); font-size: 12px; font-weight: 400; margin-top: 5px; line-height: 1.35; }
+
+        .project-flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-top: 20px; }
+        .flow-step { background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 6px; padding: 16px; min-height: 120px; position: relative; }
+        .flow-step:not(:last-child)::after { content: "\f061"; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; right: -13px; top: 45%; color: var(--accent-blue); font-size: 14px; z-index: 2; }
+        .flow-step i { color: var(--accent-blue); font-size: 22px; margin-bottom: 12px; }
+        .flow-title { display: block; color: #fff; font-weight: 700; margin-bottom: 6px; }
+        .flow-desc { color: var(--text-light); font-size: 12px; line-height: 1.4; }
+
+        .live-status-bar { display: flex; justify-content: space-around; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 6px; border: 1px solid var(--border-color); margin-top: 30px; }
+        .status-pill { display: flex; flex-direction: column; align-items: center; width: 30%; }
+        .pill-label { font-size: 12px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .pill-val { font-size: 22px; font-weight: bold; color: #fff; }
+
+        /* --- DASHBOARD WIDGETS --- */
+        .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 15px; }
+        .stat-box { background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 30px; border-radius: 6px; text-align: center; }
+        .stat-label { font-size: 13px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px; }
+        .valoare { font-size: 38px; font-weight: bold; color: #fff; }
+
+        .ok { color: #2ecc71; } .err { color: #e74c3c; } .warn { color: #f1c40f; } .active-blue { color: var(--accent-blue); }
+
+        /* --- CONTROL & LIVE VIDEO GRID --- */
+        .live-control-layout { display: grid; grid-template-columns: 1.8fr 1fr; gap: 25px; }
+        
+        .btn-group { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 15px; border: 1px solid rgba(0,0,0,0.2); border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.1s; text-transform: uppercase; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; color: white; }
+        .btn:active { transform: scale(0.98); }
+        .btn-on { background: var(--gradient-on); } .btn-on:hover { filter: brightness(1.1); }
+        .btn-off { background: var(--gradient-off); } .btn-off:hover { filter: brightness(1.1); }
+        .btn-pos { background: var(--gradient-pos); color: #1a1a1a; border-color: #b0c4de; } .btn-pos:hover { filter: brightness(1.1); }
+        .btn-center { background: #333; color: #fff; border-color: #444; } .btn-center:hover { background: #444; }
+
+        .video-container { width: 100%; border: 2px solid #000; border-radius: 6px; background: #000; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; height: 100%; min-height: 400px; }
+        .video-container img { width: 100%; height: auto; display: block; }
+        .live-badge { position: absolute; top: 15px; right: 15px; background: #e74c3c; color: white; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; animation: pulse 1.5s infinite; display: flex; align-items: center; gap: 5px; z-index: 10; }
+        .fullscreen-btn { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.65); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 8px; z-index: 10; }
+        .fullscreen-btn:hover { background: rgba(0,169,224,0.85); }
+        .video-container:fullscreen { width: 100vw; height: 100vh; border: none; border-radius: 0; }
+        .video-container:fullscreen img { width: 100%; height: 100%; object-fit: contain; }
+        .control-column { display: flex; flex-direction: column; gap: 20px; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        #grafic-live { width: 100%; border-radius: 6px; border: 1px solid var(--border-color); margin-top: 15px; background-color: #fff; padding: 15px; }
+        #log { font-size: 13px; color: var(--accent-blue); text-align: left; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 6px; border: 1px solid var(--border-color); font-family: monospace; width: 100%; min-height: 50px;}
+        .reactor-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 20px; }
+        .compact-reactor-grid { grid-template-columns: repeat(6, 1fr); }
+        .reactor-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 14px; text-align: center; min-height: 92px; }
+        .reactor-card .label { display: block; font-size: 12px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .reactor-card .value { display: block; font-size: 24px; font-weight: bold; color: #fff; }
+        #reactor-chart { width: 100%; height: 430px; border-radius: 6px; border: 1px solid var(--border-color); background: #fff; display: block; }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <div class="app-title">
+                SISTEM MONITORIZARE<br>
+                <span style="color: var(--accent-blue); font-size: 14px; font-weight: normal;">Bioreactor Licență</span>
+            </div>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="#" class="active-link" onclick="showPage('about', this)"><i class="fas fa-info-circle"></i> Despre Proiect</a>
+            <a href="#" onclick="showPage('dashboard', this)"><i class="fas fa-satellite-dish"></i> Dashboard Tehnic</a>
+            <a href="#" onclick="showPage('live_control', this)"><i class="fas fa-gamepad"></i> Control & Live Video</a>
+            <a href="#" onclick="showPage('graphs', this)"><i class="fas fa-chart-line"></i> Date Grafice</a>
+            <a href="#" onclick="showPage('bioreactor', this)"><i class="fas fa-flask-vial"></i> Date Bioreactor</a>
+        </div>
+
+        <div class="sidebar-footer">Conexiune LAN / Localhost</div>
+    </div>
+
+    <div id="main-wrapper">
+        <div id="top-bar">Uptime Server: &nbsp;<span id="ceas" style="color: #fff;">--:--:--</span></div>
+
+        <div id="content-area">
+
+            <div id="page-about" class="page-section">
+                <div class="container" style="border: none; background: transparent; box-shadow: none;">
+                    <div class="hero-section">
+                        <h1 class="hero-title">Sistem Inteligent de Monitorizare a Fermentației Berii</h1>
+                        <p class="hero-desc">Aplicația urmărește automat procesul de fermentație prin captură periodică de imagini, procesare computer vision pentru determinarea nivelului de spumă, citirea datelor transmise de bioreactor și controlul iluminării din cutie prin STM32.</p>
+                    </div>
+
+                    <h2 style="font-size: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                        <i class="fas fa-cogs" style="color: var(--accent-blue); margin-right: 8px;"></i> Capabilități Sistem
+                    </h2>
+                    
+                    <div class="features-grid">
+                        <div class="feature-card"><i class="fas fa-camera"></i><span>Captură automată imagini<small>Camera preia cadre la interval stabilit, cu iluminare controlată.</small></span></div>
+                        <div class="feature-card"><i class="fas fa-lightbulb"></i><span>Control automat LED<small>STM32 comandă releul, iar luminile se aprind doar la captură.</small></span></div>
+                        <div class="feature-card"><i class="fas fa-eye"></i><span>Detecție nivel spumă<small>OpenCV identifică stratul activ de spumă și elimină crusta persistentă.</small></span></div>
+                        <div class="feature-card"><i class="fas fa-flask-vial"></i><span>Date bioreactor<small>Backend-ul citește și parsează temperatura, pH-ul, pO2 și ceilalți parametri.</small></span></div>
+                        <div class="feature-card"><i class="fas fa-chart-line"></i><span>Grafic evoluție<small>Rezultatele sunt salvate și afișate cu filtrare semnal și punct maxim.</small></span></div>
+                        <div class="feature-card"><i class="fas fa-video"></i><span>Interfață web live<small>Site-ul oferă streaming, status sistem, reset și descărcare date.</small></span></div>
+                    </div>
+
+                    <h2 style="font-size: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-top: 34px;">
+                        <i class="fas fa-diagram-project" style="color: var(--accent-blue); margin-right: 8px;"></i> Flux Funcțional
+                    </h2>
+
+                    <div class="project-flow">
+                        <div class="flow-step">
+                            <i class="fas fa-lightbulb"></i>
+                            <span class="flow-title">Iluminare</span>
+                            <div class="flow-desc">LED-urile sunt aprinse automat înainte de captură și oprite după poză.</div>
+                        </div>
+                        <div class="flow-step">
+                            <i class="fas fa-camera-retro"></i>
+                            <span class="flow-title">Achiziție imagine</span>
+                            <div class="flow-desc">Raspberry Pi citește un cadru proaspăt din cameră și respinge imaginile întunecate.</div>
+                        </div>
+                        <div class="flow-step">
+                            <i class="fas fa-wand-magic-sparkles"></i>
+                            <span class="flow-title">Procesare</span>
+                            <div class="flow-desc">Algoritmul aplică ROI, grayscale, CLAHE, Gaussian, Sobel, Otsu și filtrare crustă.</div>
+                        </div>
+                        <div class="flow-step">
+                            <i class="fas fa-microchip"></i>
+                            <span class="flow-title">Date reactor</span>
+                            <div class="flow-desc">Parametrii bioreactorului sunt citiți de pe interfața serială și salvați în istoric.</div>
+                        </div>
+                        <div class="flow-step">
+                            <i class="fas fa-chart-area"></i>
+                            <span class="flow-title">Vizualizare</span>
+                            <div class="flow-desc">Frontend-ul afișează graficul spumei, datele reactorului și starea sistemului.</div>
+                        </div>
+                    </div>
+
+                    <div class="live-status-bar">
+                        <div class="status-pill"><span class="pill-label">Temp CPU</span><span class="pill-val ok live-temp">-- °C</span></div>
+                        <div class="status-pill"><span class="pill-label">Conexiune STM32</span><span class="pill-val warn live-conn">Așteptare</span></div>
+                        <div class="status-pill"><span class="pill-label">Status Proces</span><span class="pill-val active-blue"><i class="fas fa-spinner fa-spin"></i> Activ</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-dashboard" class="page-section">
+                <div class="container">
+                    <div class="panel-header"><i class="fas fa-microchip"></i> STATUS DETALIAT SISTEM</div>
+                    <div class="panel-content">
+                        <div class="status-grid">
+                            <div class="stat-box"><span class="stat-label">Temperatură CPU Pi</span><span class="valoare ok live-temp">-- °C</span></div>
+                            <div class="stat-box"><span class="stat-label">Conexiune STM32</span><span class="valoare warn live-stm-conn">Așteptare...</span></div>
+                            <div class="stat-box"><span class="stat-label">Conexiune Serială Bioreactor</span><span class="valoare warn live-reactor-conn">Așteptare...</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="container">
+                    <div class="panel-header"><i class="fas fa-terminal"></i> INFORMAȚII REȚEA & PORTURI</div>
+                    <div class="panel-content">
+                        <p>Backend-ul rulează pe Raspberry Pi și comunică separat cu placa STM32 și cu bioreactorul.</p>
+                        <p style="margin-top: 15px;">STM32 LED: <code style="background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 4px; color: var(--accent-blue); font-size: 16px;">/dev/ttyACM0</code> <span style="color: var(--text-light);">115200 bps</span></p>
+                        <p style="margin-top: 10px;">Bioreactor: <code style="background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 4px; color: var(--accent-blue); font-size: 16px;">/dev/ttyUSB0</code> <span style="color: var(--text-light);">9600 bps</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-live_control" class="page-section">
+                <div class="live-control-layout">
+                    
+                    <div class="container" style="margin-bottom: 0; display: flex; flex-direction: column;">
+                        <div class="panel-header"><i class="fas fa-video"></i> STREAMING VIDEO LIVE</div>
+                        <div class="panel-content" style="padding: 15px; flex: 1; display: flex;">
+                            <div class="video-container" id="video-box">
+                                <button class="fullscreen-btn" onclick="toggleVideoFullscreen()" title="Afișează video pe tot ecranul">
+                                    <i class="fas fa-expand"></i> FULLSCREEN
+                                </button>
+                                <span class="live-badge"><i class="fas fa-circle"></i> REC</span>
+                                <img id="live-image" src="" alt="Așteptare inițializare cameră web...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-column">
+                        <div class="container" style="margin-bottom: 0;">
+                            <div class="panel-header"><i class="far fa-lightbulb"></i> ILUMINARE INCINTĂ</div>
+                            <div class="panel-content" style="padding: 20px;">
+                                <div class="btn-group">
+                                    <button class="btn btn-on" onclick="comanda('aprinde')"><i class="fas fa-lightbulb"></i> ON</button>
+                                    <button class="btn btn-off" onclick="comanda('stinge')"><i class="far fa-lightbulb"></i> OFF</button>
+                                </div>
+                                <button class="btn btn-pos" style="width: 100%; margin-top: 10px;" onclick="comanda('toggle')">
+                                    <i class="fas fa-arrows-rotate"></i> TOGGLE
+                                </button>
+                                <p id="led-status" style="text-align:center; margin-top:12px; margin-bottom:0;">
+                                    Stare lumini: necunoscut
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="container" style="margin-bottom: 0; flex: 1;">
+                            <div class="panel-header"><i class="fas fa-terminal"></i> LOG COMENZI</div>
+                            <div class="panel-content" style="padding: 15px; height: 100%;">
+                                <div id="log">> Așteptare comenzi operator...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-graphs" class="page-section">
+                <div class="container">
+                    <div class="panel-header"><i class="fas fa-chart-area"></i> EVOLUȚIE NIVEL SPUMĂ</div>
+                    <div class="panel-content">
+                        <p style="text-align: center;">Analiza Computer Vision. Datele se actualizează automat. Necesită minim 5 citiri pentru generarea graficului.</p>
+                        <div style="text-align: center; margin-top: 20px;">
+
+    
+    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:15px;">
+        <button class="btn btn-pos" onclick="resetFermentatie()">
+            <i class="fas fa-rotate-left"></i> RESET
+        </button>
+
+        <button class="btn btn-pos" onclick="downloadGrafic()">
+            <i class="fas fa-download"></i> DOWNLOAD
+        </button>
+    </div>
+
+    <p id="graph-status" style="text-align:center; color: var(--text-light); margin-bottom:10px;">
+        Se încarcă datele...
+    </p>
+
+    <img id="grafic-live" 
+         src="" 
+         alt="Grafic fermentație" 
+         style="max-width: 100%;">
+</div>
+                            <p id="graph-status" style="text-align:center; color: var(--text-light); margin-bottom:10px;">
+								Se încarcă datele...
+									</p>
+<img id="grafic-live" 
+     src="" 
+     alt="Grafic fermentație" 
+     style="max-width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-bioreactor" class="page-section">
+                <div class="container">
+                    <div class="panel-header"><i class="fas fa-flask-vial"></i> DATE BIOREACTOR</div>
+                    <div class="panel-content">
+                        <p style="text-align: center;">Valorile principale sunt preluate direct din tabelul transmis de bioreactor prin interfața serială.</p>
+
+                        <div class="reactor-grid compact-reactor-grid">
+                            <div class="reactor-card"><span class="label">TIME</span><span class="value" id="reactor-time">--:--</span></div>
+                            <div class="reactor-card"><span class="label">TEMP</span><span class="value" id="reactor-temp">-- °C</span></div>
+                            <div class="reactor-card"><span class="label">STIRR</span><span class="value" id="reactor-stirr">-- rpm</span></div>
+                            <div class="reactor-card"><span class="label">pH</span><span class="value" id="reactor-ph">--</span></div>
+                            <div class="reactor-card"><span class="label">pO2</span><span class="value" id="reactor-po2">-- %</span></div>
+                            <div class="reactor-card"><span class="label">ACIDT</span><span class="value" id="reactor-acid">-- ml</span></div>
+                        </div>
+
+                        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:15px;">
+                            <button class="btn btn-pos" onclick="resetBioreactor()">
+                                <i class="fas fa-rotate-left"></i> RESET
+                            </button>
+
+                            <button class="btn btn-pos" onclick="downloadBioreactorGrafic()">
+                                <i class="fas fa-download"></i> DOWNLOAD
+                            </button>
+                        </div>
+
+                        <p id="reactor-status" style="text-align:center; color: var(--text-light); margin-bottom:10px;">
+                            Se încarcă datele bioreactorului...
+                        </p>
+
+                        <canvas id="reactor-chart" width="1100" height="430"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div> </div> <script>
+        const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
+        const pages = document.getElementsByClassName("page-section");
+        const liveImage = document.getElementById("live-image");
+
+        // --- SCHIMBARE PAGINI ---
+        function showPage(pageId, clickedLink) {
+            for (let i = 0; i < pages.length; i++) { pages[i].style.display = "none"; }
+            document.getElementById("page-" + pageId).style.display = "block";
+
+            // Stream-ul pornește automat cand accesezi pagina "live_control"
+            if (pageId === 'live_control') {
+                liveImage.src = "/video_feed";
+            } else {
+                if (liveImage.src.includes("/video_feed")) liveImage.src = "";
+            }
+
+            if (pageId === 'graphs') updateGrafic(); 
+            if (pageId === 'bioreactor') updateBioreactor(); 
+
+            if(clickedLink) {
+                sidebarLinks.forEach(link => link.classList.remove('active-link'));
+                clickedLink.classList.add('active-link');
+            }
+        }
+
+        // --- ACTUALIZARE DATE ---
+        setInterval(() => {
+            const now = new Date(); 
+            document.getElementById('ceas').innerText = now.toLocaleTimeString(); 
+        }, 1000);
+
+        function updateStatus() {
+            fetch('/status').then(r=>r.json()).then(d=>{
+                document.querySelectorAll('.live-temp').forEach(el => el.innerText = d.temperatura + " °C");
+                setConnectionState('.live-conn', d.conexiune);
+                setConnectionState('.live-stm-conn', d.conexiune);
+                setConnectionState('.live-reactor-conn', d.conexiune_reactor);
+                const ledStatus = document.getElementById('led-status');
+                if (ledStatus && d.lumini) {
+                    ledStatus.innerText = "Stare lumini: " + d.lumini;
+                    ledStatus.style.color = d.lumini === "aprins" ? "var(--success-green)" : "var(--text-light)";
+                }
+            }).catch(e => console.log("Așteptare server..."));
+        }
+        setInterval(updateStatus, 2000);
+
+        function setConnectionState(selector, value) {
+            document.querySelectorAll(selector).forEach(el => {
+                const status = value || "Așteptare";
+                el.innerText = status;
+                const baseClass = el.classList.contains('pill-val') ? "pill-val" : "valoare";
+
+                if (status === "Conectat" || status === "OK") {
+                    el.className = baseClass + " ok " + selector.replace(".", "");
+                } else if (status === "Eroare" || status === "Deconectat") {
+                    el.className = baseClass + " err " + selector.replace(".", "");
+                } else {
+                    el.className = baseClass + " warn " + selector.replace(".", "");
+                }
+            });
+        }
+
+        function updateGrafic() {
+    const img = document.getElementById('grafic-live');
+    const status = document.getElementById('graph-status');
+
+    // doar dacă pagina e activă
+    if (document.getElementById('page-graphs').style.display !== "block") return;
+
+    status.innerText = "Se actualizează...";
+    status.style.color = "var(--warning-yellow)";
+
+    img.onload = () => {
+        status.innerText = "Grafic actualizat ✔";
+        status.style.color = "var(--success-green)";
+    };
+
+    img.onerror = () => {
+        status.innerText = "Nu există suficiente date încă...";
+        status.style.color = "var(--danger-red)";
+    };
+
+    img.src = "/graph?t=" + new Date().getTime();
+}
+        setInterval(updateGrafic, 180000); 
+
+        function toggleVideoFullscreen() {
+            const videoBox = document.getElementById('video-box');
+            if (!videoBox) return;
+
+            if (!document.fullscreenElement) {
+                if (videoBox.requestFullscreen) {
+                    videoBox.requestFullscreen();
+                } else if (videoBox.webkitRequestFullscreen) {
+                    videoBox.webkitRequestFullscreen();
+                } else if (videoBox.msRequestFullscreen) {
+                    videoBox.msRequestFullscreen();
+                }
+                return;
+            }
+
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        // --- TRIMIȘI COMENZI HARDWARE ---
+        function comanda(tip) {
+            const logBox = document.getElementById('log');
+            logBox.innerText = "> Execuție comandă: [" + tip.toUpperCase() + "]...";
+            logBox.style.color = "var(--text-main)";
+
+            fetch('/comanda/' + tip)
+            .then(r => r.text().then(t => {
+                if (!r.ok) throw new Error(t);
+                return t;
+            }))
+            .then(t=>{
+                logBox.innerText = "> Răspuns STM32: " + t;
+                logBox.style.color = "var(--success-green)";
+                updateStatus();
+            }).catch(e => {
+                logBox.innerText = "> EROARE: " + (e.message || "Hardware indisponibil.");
+                logBox.style.color = "var(--danger-red)";
+            });
+        }
+		
+		// =========================
+// RESET FERMENTATIE
+// =========================
+function resetFermentatie() {
+    if (!confirm("Sigur vrei să resetezi datele?")) return;
+
+    fetch('/reset?confirm=yes')
+    .then(r => r.text())
+    .then(t => {
+        document.getElementById('graph-status').innerText = "Reset realizat!";
+        document.getElementById('graph-status').style.color = "var(--warning-yellow)";
+
+        document.getElementById('grafic-live').src = "";
+    })
+    .catch(() => {
+        alert("Eroare la reset!");
+    });
+}
+
+// =========================
+// DOWNLOAD GRAFIC
+// =========================
+function downloadGrafic() {
+    const link = document.createElement('a');
+    link.href = '/graph';
+    link.download = 'grafic_fermentatie.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// =========================
+// DATE BIOREACTOR
+// =========================
+function fmtValue(value, digits = 1, suffix = "") {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return "--" + suffix;
+    return num.toFixed(digits) + suffix;
+}
+
+function setReactorValue(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.innerText = value;
+}
+
+function updateBioreactorCards(data) {
+    if (!data) return;
+
+    setReactorValue('reactor-time', data.time || "--:--");
+    setReactorValue('reactor-temp', fmtValue(data.temp_c, 1, " °C"));
+    setReactorValue('reactor-stirr', fmtValue(data.stirr_rpm, 0, " rpm"));
+    setReactorValue('reactor-ph', fmtValue(data.ph, 2, ""));
+    setReactorValue('reactor-po2', fmtValue(data.po2_percent, 1, " %"));
+    setReactorValue('reactor-acid', fmtValue(data.acidt_ml, 1, " ml"));
+}
+
+function drawLineChart(canvas, rows) {
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    const pad = { left: 58, right: 155, top: 24, bottom: 52 };
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, w, h);
+
+    const series = [
+        { key: "temp_c", label: "TEMP (°C)", color: "#e74c3c" },
+        { key: "stirr_rpm", label: "STIRR (rpm)", color: "#8e44ad" },
+        { key: "ph", label: "pH", color: "#00A9E0" },
+        { key: "po2_percent", label: "pO2 (%)", color: "#2ecc71" },
+        { key: "acidt_ml", label: "ACIDT (ml)", color: "#f39c12" }
+    ];
+
+    const points = rows.map((row, index) => ({ index, label: row.time || row.received_at || String(index), row }));
+    const allValues = [];
+
+    series.forEach(s => {
+        points.forEach(p => {
+            const value = Number(p.row[s.key]);
+            if (Number.isFinite(value)) allValues.push(value);
+        });
+    });
+
+    if (points.length < 2 || allValues.length === 0) {
+        ctx.fillStyle = "#555";
+        ctx.font = "18px Segoe UI, Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Nu există suficiente date pentru grafic.", w / 2, h / 2);
+        return;
+    }
+
+    let minY = Math.min(...allValues);
+    let maxY = Math.max(...allValues);
+    if (minY === maxY) {
+        minY -= 1;
+        maxY += 1;
+    }
+    const marginY = (maxY - minY) * 0.12;
+    minY -= marginY;
+    maxY += marginY;
+
+    const plotW = w - pad.left - pad.right;
+    const plotH = h - pad.top - pad.bottom;
+    const xFor = i => pad.left + (i / Math.max(points.length - 1, 1)) * plotW;
+    const yFor = value => pad.top + (1 - (value - minY) / (maxY - minY)) * plotH;
+
+    ctx.strokeStyle = "#d0d0d0";
+    ctx.lineWidth = 1;
+    ctx.font = "12px Segoe UI, Arial";
+    ctx.fillStyle = "#333";
+    ctx.textAlign = "right";
+
+    for (let i = 0; i <= 5; i++) {
+        const y = pad.top + (i / 5) * plotH;
+        const value = maxY - (i / 5) * (maxY - minY);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(w - pad.right, y);
+        ctx.stroke();
+        ctx.fillText(value.toFixed(1), pad.left - 8, y + 4);
+    }
+
+    ctx.strokeStyle = "#333";
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top);
+    ctx.lineTo(pad.left, h - pad.bottom);
+    ctx.lineTo(w - pad.right, h - pad.bottom);
+    ctx.stroke();
+
+    const labelStep = Math.max(1, Math.ceil(points.length / 6));
+    ctx.fillStyle = "#333";
+    ctx.textAlign = "center";
+    points.forEach((p, i) => {
+        if (i % labelStep !== 0 && i !== points.length - 1) return;
+        ctx.fillText(p.label, xFor(i), h - pad.bottom + 22);
+    });
+
+    series.forEach(s => {
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        let started = false;
+
+        points.forEach((p, i) => {
+            const value = Number(p.row[s.key]);
+            if (!Number.isFinite(value)) return;
+            const x = xFor(i);
+            const y = yFor(value);
+
+            if (!started) {
+                ctx.moveTo(x, y);
+                started = true;
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+
+        ctx.stroke();
+    });
+
+    series.forEach((s, i) => {
+        const x = w - pad.right + 24;
+        const y = pad.top + 20 + i * 24;
+        ctx.fillStyle = s.color;
+        ctx.fillRect(x, y - 9, 14, 4);
+        ctx.fillStyle = "#333";
+        ctx.textAlign = "left";
+        ctx.fillText(s.label, x + 22, y);
+    });
+}
+
+function updateBioreactor() {
+    if (document.getElementById('page-bioreactor').style.display !== "block") return;
+
+    const status = document.getElementById('reactor-status');
+    status.innerText = "Se actualizează datele bioreactorului...";
+    status.style.color = "var(--warning-yellow)";
+
+    fetch('/reactor_data')
+        .then(r => r.json())
+        .then(payload => {
+            if (payload.data) updateBioreactorCards(payload.data);
+        })
+        .catch(() => {});
+
+    fetch('/reactor_history?limit=200')
+        .then(r => r.json())
+        .then(payload => {
+            const rows = payload.data || [];
+            drawLineChart(document.getElementById('reactor-chart'), rows);
+            status.innerText = rows.length ? "Date bioreactor actualizate" : "Nu există încă date de la bioreactor";
+            status.style.color = rows.length ? "var(--success-green)" : "var(--danger-red)";
+        })
+        .catch(() => {
+            status.innerText = "Eroare la citirea datelor de bioreactor";
+            status.style.color = "var(--danger-red)";
+        });
+}
+
+setInterval(updateBioreactor, 10000);
+
+function resetBioreactor() {
+    if (!confirm("Sigur vrei să resetezi datele de bioreactor?")) return;
+
+    fetch('/reset_reactor?confirm=yes')
+        .then(r => r.text())
+        .then(() => {
+            document.getElementById('reactor-status').innerText = "Reset bioreactor realizat!";
+            document.getElementById('reactor-status').style.color = "var(--warning-yellow)";
+            drawLineChart(document.getElementById('reactor-chart'), []);
+        })
+        .catch(() => alert("Eroare la resetarea datelor de bioreactor!"));
+}
+
+function downloadBioreactorGrafic() {
+    const canvas = document.getElementById('reactor-chart');
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'grafic_bioreactor.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+    </script>
+</body>
+</html>
